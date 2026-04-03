@@ -1,6 +1,6 @@
 "use client";
 
-import type { PersonNode } from "@/lib/types/tree";
+import type { PersonNode, TreeType } from "@/lib/types/tree";
 import { PersonCard } from "./person-card";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +25,7 @@ function getLineColor(depth: number) {
 
 type TreeViewProps = {
   person: PersonNode;
+  treeType: TreeType;
   isEditable: boolean;
   isRoot?: boolean;
   depth?: number;
@@ -44,6 +45,7 @@ type TreeViewProps = {
 
 export function TreeView({
   person,
+  treeType,
   isEditable,
   isRoot = false,
   depth = 0,
@@ -106,6 +108,7 @@ export function TreeView({
 
       <PersonCard
         person={person}
+        treeType={treeType}
         isEditable={isEditable}
         isRoot={isRoot}
         onAddChild={onAddChild}
@@ -173,6 +176,7 @@ export function TreeView({
                   <div className="px-4 pt-1">
                     <TreeView
                       person={child}
+                      treeType={treeType}
                       isEditable={isEditable}
                       depth={depth + 1}
                       highlightId={highlightId}

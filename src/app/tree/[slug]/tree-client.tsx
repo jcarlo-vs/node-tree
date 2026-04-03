@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useMemo } from "react";
-import type { FamilyTreeData, Spouse } from "@/lib/types/tree";
+import type { FamilyTreeData, Spouse, TreeType } from "@/lib/types/tree";
 import { TreeView } from "@/components/tree/tree-view";
 import { TreeCanvas } from "@/components/tree/tree-canvas";
 import { ShareDialog } from "@/components/tree/share-dialog";
@@ -35,6 +35,7 @@ import { toast } from "sonner";
 type TreeClientProps = {
   slug: string;
   name: string;
+  treeType: TreeType;
   initialTreeData: FamilyTreeData;
   isEditable: boolean;
   editToken?: string;
@@ -45,6 +46,7 @@ const MAX_HISTORY = 50;
 export function TreeClient({
   slug,
   name,
+  treeType,
   initialTreeData,
   isEditable,
   editToken,
@@ -139,11 +141,8 @@ export function TreeClient({
 
   function handleAddChild(parentId: string, data: Record<string, unknown>) {
     const person = createPerson(data.name as string);
-    person.birthYear = data.birthYear as number | undefined;
-    person.deathYear = data.deathYear as number | undefined;
-    person.gender = data.gender as "male" | "female" | "other" | undefined;
-    person.birthplace = data.birthplace as string | undefined;
-    person.notes = data.notes as string | undefined;
+    const { name: _, ...fields } = data;
+    Object.assign(person, fields);
     save(addChild(treeData, parentId, person), `Added ${data.name}`);
   }
 
@@ -156,16 +155,13 @@ export function TreeClient({
   }
 
   function handleAddSpouse(nodeId: string, data: Record<string, unknown>) {
+    const { name: spouseName, ...fields } = data;
     const spouse: Spouse = {
       id: crypto.randomUUID(),
-      name: data.name as string,
-      birthYear: data.birthYear as number | undefined,
-      deathYear: data.deathYear as number | undefined,
-      gender: data.gender as "male" | "female" | "other" | undefined,
-      birthplace: data.birthplace as string | undefined,
-      notes: data.notes as string | undefined,
-    };
-    save(addSpouse(treeData, nodeId, spouse), `Added ${data.name}`);
+      name: spouseName as string,
+      ...fields,
+    } as Spouse;
+    save(addSpouse(treeData, nodeId, spouse), `Added ${spouseName}`);
   }
 
   function handleEditSpouse(nodeId: string, spouseId: string, data: Record<string, unknown>) {
@@ -226,7 +222,7 @@ export function TreeClient({
         },
       });
       const link = document.createElement("a");
-      link.download = `${name}-family-tree.png`;
+      link.download = `${name}-${treeType}.png`;
       link.href = dataUrl;
       link.click();
       toast.dismiss();
@@ -332,6 +328,7 @@ export function TreeClient({
         <div ref={treeRef}>
           <TreeView
             person={treeData.root}
+            treeType={treeType}
             isEditable={isEditable && !exporting}
             isRoot
             highlightId={highlightId}
@@ -348,8 +345,18 @@ export function TreeClient({
           {/* Empty state */}
           {isEmpty && isEditable && (
             <div className="text-center mt-8 text-muted-foreground">
-              <p className="text-sm">Start building your family tree</p>
-              <p className="text-xs mt-1">Click the icons above to add a spouse or children</p>
+              <p className="text-sm">
+                {treeType === "family" ? "Start building your family tree" :
+                 treeType === "org" ? "Start building your org chart" :
+                 treeType === "mindmap" ? "Start mapping your ideas" :
+                 treeType === "skill" ? "Start building your skill tree" :
+                 "Start building your decision tree"}
+              </p>
+              <p className="text-xs mt-1">
+                {treeType === "family"
+                  ? "Click the icons above to add a spouse or children"
+                  : "Click the + icon above to add nodes"}
+              </p>
             </div>
           )}
         </div>
