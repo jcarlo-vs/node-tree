@@ -147,6 +147,21 @@ export function createPerson(name: string): PersonNode {
   };
 }
 
+export function reorderChildren(
+  tree: FamilyTreeData,
+  parentId: string,
+  fromIndex: number,
+  toIndex: number
+): FamilyTreeData {
+  const copy = structuredClone(tree);
+  const parent = findNode(copy.root, parentId);
+  if (parent && fromIndex !== toIndex) {
+    const [moved] = parent.children.splice(fromIndex, 1);
+    parent.children.splice(toIndex, 0, moved);
+  }
+  return copy;
+}
+
 /** Count descendants (for delete confirmation) */
 export function countDescendants(node: PersonNode): number {
   let count = 0;

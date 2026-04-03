@@ -3,7 +3,12 @@
 import type { PersonNode } from "@/lib/types/tree";
 import { PersonCard } from "./person-card";
 import { Button } from "@/components/ui/button";
-import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
+import {
+  ChevronDownIcon,
+  ChevronRightIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+} from "lucide-react";
 
 const LINE_COLORS = [
   "var(--tree-line-0)",
@@ -24,6 +29,9 @@ type TreeViewProps = {
   isRoot?: boolean;
   depth?: number;
   highlightId?: string | null;
+  siblingIndex?: number;
+  siblingCount?: number;
+  parentId?: string;
   onAddChild: (parentId: string, data: Record<string, unknown>) => void;
   onEditPerson: (nodeId: string, data: Record<string, unknown>) => void;
   onRemovePerson: (nodeId: string) => void;
@@ -31,6 +39,7 @@ type TreeViewProps = {
   onEditSpouse: (nodeId: string, spouseId: string, data: Record<string, unknown>) => void;
   onRemoveSpouse: (nodeId: string, spouseId: string) => void;
   onToggleCollapse: (nodeId: string) => void;
+  onReorderChildren: (parentId: string, fromIndex: number, toIndex: number) => void;
 };
 
 export function TreeView({
@@ -39,6 +48,9 @@ export function TreeView({
   isRoot = false,
   depth = 0,
   highlightId,
+  siblingIndex = 0,
+  siblingCount = 1,
+  parentId,
   onAddChild,
   onEditPerson,
   onRemovePerson,
@@ -46,11 +58,15 @@ export function TreeView({
   onEditSpouse,
   onRemoveSpouse,
   onToggleCollapse,
+  onReorderChildren,
 }: TreeViewProps) {
   const hasChildren = person.children.length > 0;
   const color = getLineColor(depth);
   const multipleChildren = person.children.length > 1;
   const isHighlighted = highlightId === person.id;
+
+  const canMoveLeft = siblingCount > 1 && siblingIndex > 0;
+  const canMoveRight = siblingCount > 1 && siblingIndex < siblingCount - 1;
 
   return (
     <div
@@ -59,6 +75,35 @@ export function TreeView({
       }`}
       data-node-id={person.id}
     >
+      {/* Reorder arrows */}
+      {isEditable && !isRoot && siblingCount > 1 && (
+        <div className="flex items-center gap-1 mb-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-5 w-5 opacity-40 hover:opacity-100"
+            onClick={() => parentId && onReorderChildren(parentId, siblingIndex, siblingIndex - 1)}
+            disabled={!canMoveLeft}
+            title="Move left"
+          >
+            <ArrowLeftIcon className="h-3 w-3" />
+          </Button>
+          <span className="text-[9px] text-muted-foreground/50 select-none">
+            {siblingIndex + 1}/{siblingCount}
+          </span>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-5 w-5 opacity-40 hover:opacity-100"
+            onClick={() => parentId && onReorderChildren(parentId, siblingIndex, siblingIndex + 1)}
+            disabled={!canMoveRight}
+            title="Move right"
+          >
+            <ArrowRightIcon className="h-3 w-3" />
+          </Button>
+        </div>
+      )}
+
       <PersonCard
         person={person}
         isEditable={isEditable}
@@ -71,7 +116,6 @@ export function TreeView({
         onRemoveSpouse={onRemoveSpouse}
       />
 
-      {/* Collapse/expand toggle */}
       {hasChildren && (
         <>
           <div className="flex flex-col items-center">
@@ -100,7 +144,6 @@ export function TreeView({
             )}
           </div>
 
-          {/* Children row */}
           {!person.collapsed && (
             <div className="flex items-start gap-0">
               {person.children.map((child, i) => (
@@ -133,6 +176,9 @@ export function TreeView({
                       isEditable={isEditable}
                       depth={depth + 1}
                       highlightId={highlightId}
+                      siblingIndex={i}
+                      siblingCount={person.children.length}
+                      parentId={person.id}
                       onAddChild={onAddChild}
                       onEditPerson={onEditPerson}
                       onRemovePerson={onRemovePerson}
@@ -140,6 +186,7 @@ export function TreeView({
                       onEditSpouse={onEditSpouse}
                       onRemoveSpouse={onRemoveSpouse}
                       onToggleCollapse={onToggleCollapse}
+                      onReorderChildren={onReorderChildren}
                     />
                   </div>
                 </div>
@@ -147,7 +194,6 @@ export function TreeView({
             </div>
           )}
 
-          {/* Collapsed indicator */}
           {person.collapsed && (
             <p className="text-[10px] text-muted-foreground mt-1">
               {person.children.length} hidden

@@ -14,6 +14,7 @@ import {
   addSpouse,
   updateSpouse,
   removeSpouse,
+  reorderChildren,
   toggleCollapse,
   createPerson,
   migrateTree,
@@ -173,6 +174,10 @@ export function TreeClient({
 
   function handleRemoveSpouse(nodeId: string, spouseId: string) {
     save(removeSpouse(treeData, nodeId, spouseId), "Removed");
+  }
+
+  function handleReorderChildren(parentId: string, fromIndex: number, toIndex: number) {
+    save(reorderChildren(treeData, parentId, fromIndex, toIndex), "Reordered");
   }
 
   function handleToggleCollapse(nodeId: string) {
@@ -337,6 +342,7 @@ export function TreeClient({
             onEditSpouse={handleEditSpouse}
             onRemoveSpouse={handleRemoveSpouse}
             onToggleCollapse={handleToggleCollapse}
+            onReorderChildren={handleReorderChildren}
           />
 
           {/* Empty state */}
