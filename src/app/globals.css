@@ -128,3 +128,52 @@
     @apply font-sans;
   }
 }
+
+/* ── Tree connector lines ── */
+
+/* Depth-based line colors */
+:root {
+  --tree-line-0: oklch(0.65 0.15 250);   /* blue */
+  --tree-line-1: oklch(0.65 0.15 160);   /* teal */
+  --tree-line-2: oklch(0.65 0.15 50);    /* amber */
+  --tree-line-3: oklch(0.65 0.15 330);   /* pink */
+  --tree-line-4: oklch(0.65 0.15 130);   /* green */
+  --tree-line-5: oklch(0.65 0.15 290);   /* purple */
+}
+
+.tree-line {
+  flex-shrink: 0;
+  border-radius: 1px;
+}
+
+.tree-line-v {
+  width: 2px;
+  height: 28px;
+}
+
+.tree-line-h {
+  height: 2px;
+  align-self: stretch;
+}
+
+/* Dot pattern canvas background */
+.canvas-dots {
+  background-image: radial-gradient(circle, oklch(1 0 0 / 8%) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Node entrance animation */
+@keyframes node-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.tree-node-animate {
+  animation: node-enter 0.3s ease-out;
+}
