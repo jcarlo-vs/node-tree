@@ -1,9 +1,9 @@
 export const TREE_TYPES = {
-  family: { label: "Family Tree", icon: "👨‍👩‍👧‍👦", description: "Clan lineage with spouses" },
-  org: { label: "Org Chart", icon: "🏢", description: "Company or team hierarchy" },
-  mindmap: { label: "Mind Map", icon: "🧠", description: "Ideas and brainstorming" },
-  skill: { label: "Skill Tree", icon: "⚡", description: "Learning path or progression" },
-  decision: { label: "Decision Tree", icon: "🔀", description: "Choices and outcomes" },
+  family: { label: "Family Tree", description: "Clan lineage with spouses" },
+  org: { label: "Org Chart", description: "Company or team hierarchy" },
+  mindmap: { label: "Mind Map", description: "Ideas and brainstorming" },
+  skill: { label: "Skill Tree", description: "Learning path or progression" },
+  decision: { label: "Decision Tree", description: "Choices and outcomes" },
 } as const;
 
 export type TreeType = keyof typeof TREE_TYPES;

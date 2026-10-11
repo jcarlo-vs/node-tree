@@ -113,15 +113,28 @@ export function TreeCanvas({ children, onUndo, onRedo, onSearch }: TreeCanvasPro
     const container = containerRef.current;
     if (!container) return;
 
+    // Zoom toward the pointer, not the middle of the canvas.
     function handleWheel(e: WheelEvent) {
       e.preventDefault();
-      const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
-      setZoom((z) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, z + delta)));
+      if (!container) return;
+      const z = zoom;
+      const next = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, z + (e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP)));
+      if (next === z) return;
+
+      // the content is transformed about its top-centre, so measure from there
+      const rect = container.getBoundingClientRect();
+      const dx = e.clientX - rect.left - rect.width / 2;
+      const dy = e.clientY - rect.top;
+      const p = pan;
+      const ratio = next / z;
+
+      setPan({ x: dx - ratio * (dx - p.x), y: dy - ratio * (dy - p.y) });
+      setZoom(next);
     }
 
     container.addEventListener("wheel", handleWheel, { passive: false });
     return () => container.removeEventListener("wheel", handleWheel);
-  }, []);
+  }, [zoom, pan]);
 
   // Mouse drag to pan
   const handleMouseDown = useCallback(

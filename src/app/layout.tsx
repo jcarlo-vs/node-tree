@@ -14,8 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Family Tree Maker",
-  description: "Create and share your family tree. No account needed.",
+  title: "Node Tree · family trees, org charts, mind maps",
+  description:
+    "Build a family tree, org chart, mind map, skill roadmap or decision tree and share it with a link. No account needed.",
 };
 
 export default function RootLayout({

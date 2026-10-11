@@ -177,3 +177,16 @@
 .tree-node-animate {
   animation: node-enter 0.3s ease-out;
 }
+/* Pulses travelling the connector lines on the home preview */
+.tree-pulse {
+  filter: drop-shadow(0 0 3px currentColor);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tree-node-animate {
+    animation: none;
+  }
+  .tree-pulse {
+    display: none;
+  }
+}

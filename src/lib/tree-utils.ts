@@ -205,3 +205,22 @@ function searchTreeInner(node: PersonNode, q: string): SearchResult[] {
   }
   return results;
 }
+
+/** The node a spouse belongs to, or null if the id isn't a spouse. */
+export function findSpouseOwner(node: PersonNode, spouseId: string): PersonNode | null {
+  if (node.spouses.some((s) => s.id === spouseId)) return node;
+  for (const child of node.children) {
+    const found = findSpouseOwner(child, spouseId);
+    if (found) return found;
+  }
+  return null;
+}
+
+export function findParent(node: PersonNode, childId: string): PersonNode | null {
+  if (node.children.some((c) => c.id === childId)) return node;
+  for (const child of node.children) {
+    const found = findParent(child, childId);
+    if (found) return found;
+  }
+  return null;
+}

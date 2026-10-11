@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const type = TREE_TYPES[(tree.treeType as TreeType) ?? "family"];
   return {
-    title: `${tree.name} — ${type.label}`,
+    title: `${tree.name} · ${type.label}`,
     description: `View the ${type.label.toLowerCase()} for ${tree.name}`,
   };
 }
